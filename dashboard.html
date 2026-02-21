@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - المنظومة الأمنية للأموال العامة</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        body {
+            background: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+        }
+
+        /* Sidebar Styles - RTL */
+        .sidebar {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-top: 20px;
+            color: white;
+            position: fixed;
+            width: 280px;
+            height: 100vh;
+            overflow-y: auto;
+            right: 0;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h5 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            flex: 1;
+        }
+
+        .sidebar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: 0.3s;
+            border-right: 4px solid transparent;
+        }
+
+        .sidebar-nav .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-nav .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-right-color: #fff;
+        }
+
+        .sidebar-nav .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .logout-btn {
+            position: relative;
+            margin: 20px;
+            margin-top: auto;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: calc(100% - 40px);
+            transition: 0.3s;
+            font-weight: 600;
+            z-index: 1001;
+        }
+
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+
+        /* Main Content - RTL */
+        .main-content {
+            margin-right: 280px;
+            padding: 30px 20px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-header h2 {
+            margin: 0;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Cards */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #667eea;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card h4 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: #667eea;
+            opacity: 0.2;
+        }
+
+        /* Forms */
+        .form-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-section h4 {
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+            transition: 0.3s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-custom {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        .btn-danger-custom {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-danger-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+            color: white;
+        }
+
+        .btn-success-custom {
+            background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-success-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(81, 207, 102, 0.3);
+            color: white;
+        }
+
+        /* Table */
+        .table-responsive {
+            border-radius: 12px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table thead th {
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            font-weight: 700;
+            color: #667eea;
+            padding: 15px;
+        }
+
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .image-upload-area:hover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+        }
+
+        .image-upload-area img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* Log Container */
+        .log-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .log-item:hover {
+            background: #f0f2ff;
+        }
+
+        .log-item-user {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .log-item-time {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .log-item-message {
+            margin-top: 8px;
+            color: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                position: fixed;
+                width: 250px;
+            }
+
+            .main-content {
+                margin-right: 250px;
+                padding: 20px 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .stat-card .stat-value {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                right: 0;
+                min-height: auto;
+                padding: 15px 0;
+                padding-bottom: 80px;
+            }
+
+            .sidebar-header {
+                margin: 0;
+                padding: 15px;
+                border-bottom: none;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 10px;
+            }
+
+            .sidebar-nav .nav-link {
+                padding: 10px 15px;
+                white-space: nowrap;
+                border-right: none;
+                border-bottom: 3px solid transparent;
+                flex-shrink: 0;
+            }
+
+            .sidebar-nav .nav-link.active {
+                border-right: none;
+                border-bottom-color: #fff;
+            }
+
+            .main-content {
+                margin-right: 0;
+                padding: 20px 15px;
+            }
+
+            .logout-btn {
+                position: relative;
+                margin: 20px;
+                margin-top: auto;
+                width: calc(100% - 40px);
+                z-index: 1001;
+            }
+
+            .stat-card .stat-value {
+                font-size: 1.8rem;
+            }
+
+            .form-section {
+                padding: 15px;
+            }
+
+            .table {
+                font-size: 0.85rem;
+            }
+
+            .table thead th, .table tbody td {
+                padding: 10px;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h5><i class="fas fa-shield-halved"></i> لوحة التحكم</h5>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li><a href="#" onclick="switchTab('dashboard')" class="nav-link active"><i class="fas fa-chart-line"></i> الرئيسية</a></li>
+            <li id="adminLinkContainer" style="display: none;"><a href="#" onclick="switchTab('usersManagement')" class="nav-link"><i class="fas fa-users-cog"></i> إدارة المستخدمين</a></li>
+            <li id="adminLinkContainer2" style="display: none;"><a href="#" onclick="switchTab('adminSection')" class="nav-link"><i class="fas fa-user-shield"></i> إدارة النظام</a></li>
+            <li><a href="#" onclick="switchTab('entryForm')" class="nav-link"><i class="fas fa-file-medical"></i> إدراج البيانات</a></li>
+            <li><a href="#" onclick="switchTab('activityLog')" class="nav-link"><i class="fas fa-history"></i> سجل النشاط</a></li>
+        </ul>
+
+        <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2><i class="fas fa-tachometer-alt"></i> لوحة التحكم</h2>
+            </div>
+            <div class="user-badge">
+                <i class="fas fa-user-circle"></i>
+                <span id="userBadge">Mahmoud</span>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div id="statsContainer" class="row"></div>
+        </div>
+
+        <!-- Users Management Tab -->
+        <div id="usersManagement" class="tab-content">
+            <div class="row">
+                <div class="col-lg-5 mb-4">
+                    <div class="form-section">
+                        <h4><i class="fas fa-user-plus"></i> إضافة مستخدم جديد</h4>
+                        <div class="mb-3">
+                            <label for="new_u_name" class="form-label">اسم المستخدم</label>
+                            <input type="text" class="form-control" id="new_u_name" placeholder="أدخل اسم المستخدم">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_u_pass" class="form-label">كلمة السر</label>
+                            <input type="password" class="form-control" id="new_u_pass" placeholder="أدخل كلمة السر">
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_u_role" class="form-label">الصلاحية</label>
+                            <select class="form-select" id="new_u_role">
+                                <option value="user">مستخدم عادي</option>
+                                <option value="admin">أدمن</option>
+                            </select>
+                        </div>
+                        <button onclick="addUser()" class="btn btn-primary-custom w-100"><i class="fas fa-plus"></i> إضافة مستخدم</button>
+                    </div>
+                </div>
+
+                <div class="col-lg-7 mb-4">
+                    <div class="form-section">
+                        <h4><i class="fas fa-list"></i> قائمة المستخدمين</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>اسم المستخدم</th>
+                                        <th>الصلاحية</th>
+                                        <th>تاريخ الإنشاء</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Section Tab -->
+        <div id="adminSection" class="tab-content">
+            <div class="row mb-4">
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h4>عدد المستخدمين</h4>
+                                <div class="stat-value" id="totalUsers">0</div>
+                            </div>
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h4>إجمالي الحالات</h4>
+                                <div class="stat-value" id="totalRecords">0</div>
+                            </div>
+                            <i class="fas fa-database"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h4>عدد العمليات</h4>
+                                <div class="stat-value" id="totalLogs">0</div>
+                            </div>
+                            <i class="fas fa-history"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4><i class="fas fa-cogs"></i> إجراءات الإدارة</h4>
+                <div class="row">
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <button onclick="exportData()" class="btn btn-success-custom w-100">
+                            <i class="fas fa-download"></i> تصدير البيانات
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <button onclick="backupData()" class="btn btn-primary-custom w-100">
+                            <i class="fas fa-save"></i> نسخ احتياطي
+                        </button>
+                    </div>
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <button onclick="clearAllData()" class="btn btn-danger-custom w-100">
+                            <i class="fas fa-trash"></i> مسح البيانات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Entry Form Tab -->
+        <div id="entryForm" class="tab-content">
+            <div class="form-section">
+                <h4><i class="fas fa-edit"></i> إدراج بيانات المنظومة</h4>
+                <form id="crimeForm">
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">صورة المتهم</label>
+                            <div class="image-upload-area">
+                                <input type="file" id="img_acc" onchange="preview(this,'p1')" style="display: none;">
+                                <label for="img_acc" style="cursor: pointer; margin: 0;">
+                                    <i class="fas fa-image fa-2x"></i><br>اختر صورة المتهم
+                                </label>
+                                <img id="p1" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">صورة المحضر</label>
+                            <div class="image-upload-area">
+                                <input type="file" id="img_rec" onchange="preview(this,'p2')" style="display: none;">
+                                <label for="img_rec" style="cursor: pointer; margin: 0;">
+                                    <i class="fas fa-image fa-2x"></i><br>اختر صورة المحضر
+                                </label>
+                                <img id="p2" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label for="acc_name" class="form-label">الاسم</label>
+                            <input type="text" class="form-control" id="acc_name" placeholder="أدخل الاسم">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="acc_dob" class="form-label">تاريخ الميلاد</label>
+                            <input type="date" class="form-control" id="acc_dob">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label for="acc_id" class="form-label">الرقم القومي</label>
+                            <input type="text" class="form-control" id="acc_id" placeholder="أدخل الرقم القومي">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="acc_qual" class="form-label">المؤهل</label>
+                            <input type="text" class="form-control" id="acc_qual" placeholder="أدخل المؤهل">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label for="acc_job" class="form-label">الوظيفة</label>
+                            <input type="text" class="form-control" id="acc_job" placeholder="أدخل الوظيفة">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="acc_address" class="form-label">العنوان</label>
+                            <input type="text" class="form-control" id="acc_address" placeholder="أدخل العنوان">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label for="acc_phones" class="form-label">أرقام الهواتف</label>
+                            <input type="text" class="form-control" id="acc_phones" placeholder="أدخل أرقام الهواتف">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="crime_type" class="form-label">نوع الجريمة</label>
+                            <select class="form-select" id="crime_type">
+                                <option>الأسلوب الإجرامي: نصب إلكتروني</option>
+                                <option>نقد</option>
+                                <option>مراهنات</option>
+                                <option>مستندي</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label for="vic_name" class="form-label">اسم المجني عليه</label>
+                            <input type="text" class="form-control" id="vic_name" placeholder="أدخل اسم المجني عليه">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="vic_phones" class="form-label">أرقام التواصل</label>
+                            <input type="text" class="form-control" id="vic_phones" placeholder="أدخل أرقام التواصل">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="case_num" class="form-label">رقم القضية</label>
+                        <input type="text" class="form-control" id="case_num" placeholder="أدخل رقم القضية">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="crime_details" class="form-label">معلومات إضافية</label>
+                        <textarea class="form-control" id="crime_details" rows="4" placeholder="أدخل المعلومات الإضافية"></textarea>
+                    </div>
+
+                    <button type="button" onclick="saveData()" class="btn btn-primary-custom w-100">
+                        <i class="fas fa-save"></i> حفظ البيانات
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Activity Log Tab -->
+        <div id="activityLog" class="tab-content">
+            <div class="form-section">
+                <h4><i class="fas fa-list"></i> سجل نشاط المستخدمين</h4>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="logSearch" placeholder="بحث في السجل..." onkeyup="filterLogs()">
+                    <button class="btn btn-danger-custom" onclick="clearActivityLog()"><i class="fas fa-trash"></i> مسح السجل</button>
+                </div>
+                <div id="logList" class="log-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/file.js"></script>
+    <script>
+        // Tab switching function
+        function switchTab(tabName) {
+            event.preventDefault();
+            
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked link
+            event.target.closest('.nav-link').classList.add('active');
+            
+            // Update content based on tab
+            if(tabName === 'activityLog') renderLogs();
+            if(tabName === 'usersManagement') renderUsers();
+            if(tabName === 'adminSection') updateAdminStats();
+            if(tabName === 'dashboard') updateDashboard();
+        }
+
+        // Initialize dashboard on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Set user badge
+            document.getElementById('userBadge').innerText = currentUser.name;
+            
+            // Show admin links only for admin users
+            const adminLink1 = document.getElementById('adminLinkContainer');
+            const adminLink2 = document.getElementById('adminLinkContainer2');
+            if (currentUser.role === 'admin') {
+                adminLink1.style.display = 'block';
+                adminLink2.style.display = 'block';
+            } else {
+                adminLink1.style.display = 'none';
+                adminLink2.style.display = 'none';
+            }
+            
+            // Load data and render
+            updateDashboard();
+            renderUsers();
+            renderLogs();
+            updateAdminStats();
+            
+            console.log('Dashboard initialized for user:', currentUser.name);
+        });
+    </script>
+</body>
+</html>
+
+            <!-- Admin Section Tab -->
+            <section id="adminSection" class="tab-view" style="display:none;">
+                <h2 class="view-title">إدارة المنظومة</h2>
+                <div class="glass-card">
+                    <div class="admin-stats">
+                        <div class="admin-stat-box">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <h4>عدد المستخدمين</h4>
+                                <span id="totalUsers">0</span>
+                            </div>
+                        </div>
+                        <div class="admin-stat-box">
+                            <i class="fas fa-database"></i>
+                            <div>
+                                <h4>إجمالي الحالات</h4>
+                                <span id="totalRecords">0</span>
+                            </div>
+                        </div>
+                        <div class="admin-stat-box">
+                            <i class="fas fa-history"></i>
+                            <div>
+                                <h4>عدد العمليات</h4>
+                                <span id="totalLogs">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3>إجراءات الإدارة</h3>
+                        <div class="admin-actions">
+                            <button onclick="clearAllData()" class="admin-action-btn danger"><i class="fas fa-trash"></i> مسح جميع البيانات</button>
+                            <button onclick="exportData()" class="admin-action-btn success"><i class="fas fa-download"></i> تصدير البيانات</button>
+                            <button onclick="backupData()" class="admin-action-btn info"><i class="fas fa-save"></i> نسخ احتياطي</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Entry Form Tab -->
+            <section id="entryForm" class="tab-view" style="display:none;">
+                <h2 class="view-title">إدراج بيانات المنظومة</h2>
+                <div class="glass-card">
+                    <form id="crimeForm" class="advanced-grid">
+                        <div class="image-section">
+                            <div class="img-box"><input type="file" id="img_acc" onchange="preview(this,'p1')"><img id="p1" class="prev-img"><span>صورة المتهم</span></div>
+                            <div class="img-box"><input type="file" id="img_rec" onchange="preview(this,'p2')"><img id="p2" class="prev-img"><span>صورة المحضر</span></div>
+                        </div>
+                        <div class="row">
+                            <input type="text" id="acc_name" placeholder="الاسم">
+                            <input type="date" id="acc_dob" title="تاريخ الميلاد">
+                        </div>
+                        <div class="row">
+                            <input type="text" id="acc_id" placeholder="الرقم القومي">
+                            <input type="text" id="acc_qual" placeholder="المؤهل">
+                        </div>
+                        <div class="row">
+                            <input type="text" id="acc_job" placeholder="الوظيفة">
+                            <input type="text" id="acc_address" placeholder="العنوان">
+                        </div>
+                        <div class="row">
+                            <input type="text" id="acc_phones" placeholder="أرقام الهواتف">
+                            <select id="crime_type">
+                                <option>الأسلوب الإجرامي: نصب إلكتروني</option>
+                                <option>نقد</option>
+                                <option>مراهنات</option>
+                                <option>مستندي</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <input type="text" id="vic_name" placeholder="اسم المجني عليه">
+                            <input type="text" id="vic_phones" placeholder="ارقام التواصل">
+                        </div>
+                        <input type="text" id="case_num" placeholder="رقم القضية">
+                        <textarea id="crime_details" placeholder="معلومات"></textarea>
+                        <button type="button" onclick="saveData()" class="save-trigger">تعديل / حفظ البيانات</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Activity Log Tab -->
+            <section id="activityLog" class="tab-view" style="display:none;">
+                <h2 class="view-title">سجل نشاط المستخدمين</h2>
+                <div class="glass-card">
+                    <div class="log-filters">
+                        <input type="text" id="logSearch" placeholder="بحث في السجل..." onkeyup="filterLogs()">
+                        <button onclick="clearActivityLog()" class="action-btn danger-small"><i class="fas fa-trash"></i> مسح السجل</button>
+                    </div>
+                    <div id="logList" class="log-container"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/file.js"></script>
+    <script>
+        // Initialize dashboard on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Set user badge
+            document.getElementById('userBadge').innerText = currentUser.name;
+            
+            // Show admin link only for admin users
+            const adminLink = document.getElementById('adminLink');
+            const adminSection = document.getElementById('adminSection');
+            if (currentUser.role === 'admin') {
+                adminLink.style.display = 'block';
+                adminSection.style.display = 'block';
+            } else {
+                adminLink.style.display = 'none';
+                adminSection.style.display = 'none';
+            }
+            
+            // Load data and render
+            updateDashboard();
+            renderUsers();
+            renderLogs();
+            updateAdminStats();
+            
+            console.log('Dashboard initialized for user:', currentUser.name);
+        });
+    </script>
+</body>
+</html>

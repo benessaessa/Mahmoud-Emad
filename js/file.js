@@ -84,6 +84,11 @@ function saveData() {
     const details = document.getElementById('crime_details').value.trim();
     const vicName = document.getElementById('vic_name').value.trim();
     const phones = document.getElementById('acc_phones').value.trim();
+    const dob = document.getElementById('acc_dob').value;
+    const qual = document.getElementById('acc_qual').value.trim();
+    const job = document.getElementById('acc_job').value.trim();
+    const address = document.getElementById('acc_address').value.trim();
+    const vicPhones = document.getElementById('vic_phones').value.trim();
 
     if (!name) {
         showAlert("يرجى إدخال اسم المتهم", "error");
@@ -94,8 +99,18 @@ function saveData() {
         return;
     }
 
+    // التحقق من وجود سجل قيد التعديل
+    const editingRecordId = localStorage.getItem('editingRecordId');
+    let isEditing = false;
+    let existingRecordIndex = -1;
+
+    if (editingRecordId) {
+        existingRecordIndex = records.findIndex(r => r.id === parseInt(editingRecordId));
+        isEditing = existingRecordIndex !== -1;
+    }
+
     const data = {
-        id: Date.now(),
+        id: isEditing ? records[existingRecordIndex].id : Date.now(),
         name: name,
         nationalId: id,
         type: type,
@@ -103,21 +118,39 @@ function saveData() {
         details: details,
         victimName: vicName,
         phones: phones,
+        dob: dob,
+        qual: qual,
+        job: job,
+        address: address,
+        vicPhones: vicPhones,
         img1: document.getElementById('p1').src || '',
         img2: document.getElementById('p2').src || '',
-        createdBy: currentUser.name,
-        time: new Date().toLocaleString('ar-EG')
+        createdBy: isEditing ? records[existingRecordIndex].createdBy : currentUser.name,
+        time: isEditing ? records[existingRecordIndex].time : new Date().toLocaleString('ar-EG')
     };
 
-    records.push(data);
+    if (isEditing) {
+        // تحديث السجل الموجود
+        records[existingRecordIndex] = data;
+        logActivity(`قام ${currentUser.name} بتعديل بيانات المتهم: ${name}`);
+        showAlert("تم تحديث البيانات بنجاح", "success");
+    } else {
+        // إضافة سجل جديد
+        records.push(data);
+        logActivity(`قام ${currentUser.name} بإدراج بيانات المتهم: ${name}`);
+        showAlert("تم حفظ البيانات بنجاح", "success");
+    }
+
     localStorage.setItem('sys_records', JSON.stringify(records));
-    
-    logActivity(`قام ${currentUser.name} بإدراج بيانات المتهم: ${name}`);
-    showAlert("تم حفظ البيانات بنجاح", "success");
+
+    // مسح معرف السجل المراد تعديله
+    localStorage.removeItem('editingRecordId');
+
     document.getElementById('crimeForm').reset();
     document.getElementById('p1').style.display = 'none';
     document.getElementById('p2').style.display = 'none';
     updateDashboard();
+    renderInfoCenterRecords();
 }
 
 // سجل النشاط محسّن
